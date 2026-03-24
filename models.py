@@ -19,5 +19,8 @@ class Team(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     city = Column(String)
+    coach = Column(String)
+    wins = Column(Integer, default=0)
+    losses = Column(Integer, default=0)
 
 

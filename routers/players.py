@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from models import Player
+from models import Player, Team
 from schemas import PlayerCreate, PlayerResponse
 
 router = APIRouter(prefix="/players", tags=["players"])
@@ -30,6 +30,11 @@ def get_player(player_id: int, db: Session = Depends(get_db)):
 # создать игрока
 @router.post("/", response_model=PlayerResponse)
 def create_player(player_data: PlayerCreate, db: Session = Depends(get_db)):
+    if player_data.team_id is not None:
+        team = db.query(Team).filter(Team.id == player_data.team_id).first()
+        if not team:
+            raise HTTPException(status_code=404, detail="Team not found")
+
     player = Player(**player_data.model_dump())
     db.add(player)
     db.commit()
